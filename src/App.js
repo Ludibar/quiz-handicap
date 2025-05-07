@@ -9,7 +9,7 @@ export default function QuizApp() {
 
   useEffect(() => {
     // Remplacer par l'URL CSV réelle
-    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vSqCcoMWwBgsDMPCEcKsO3QjKEpCAs42wnbNiXCMIKpHmvgikNZne9umMwbAED7-_oxjaNFNOoRp8X2/pub?output=csv")
+    fetch("https://docs.google.com/spreadsheets/d/TON_ID/export?format=csv")
       .then(res => res.text())
       .then(text => {
         const lines = text.trim().split("\n");
@@ -96,4 +96,3 @@ export default function QuizApp() {
     </div>
   );
 }
-
