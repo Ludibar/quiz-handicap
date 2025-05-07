@@ -8,8 +8,7 @@ export default function QuizApp() {
   const [showScore, setShowScore] = useState(false);
 
   useEffect(() => {
-    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vSqCcoMWwBgsDMPCEcKsO3QjKEpCAs42wnbNiXCMIKpHmvgikNZne9umMwbAED7-_oxjaNFNOoRp8X2/pub?output=csv"
-      .then(res => res.text())
+fetch("https://docs.google.com/spreadsheets/d/TON_ID/export?format=csv").then(res => res.text())
       .then(text => {
         const lines = text.trim().split("\n");
         const data = lines.slice(1).map(line => {
