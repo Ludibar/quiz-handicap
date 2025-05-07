@@ -2,11 +2,20 @@ import { useState, useEffect } from "react";
 
 export default function QuizApp() {
   const [quiz, setQuiz] = useState([]);
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(() => {
+    const saved = localStorage.getItem("quiz-current");
+    return saved ? parseInt(saved, 10) : 0;
+  });
   const [selected, setSelected] = useState(null);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(() => {
+    const saved = localStorage.getItem("quiz-score");
+    return saved ? parseInt(saved, 10) : 0;
+  });
   const [showScore, setShowScore] = useState(false);
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize, setFontSize] = useState(() => {
+    const saved = localStorage.getItem("quiz-fontSize");
+    return saved ? parseInt(saved, 10) : 16;
+  });
 
   useEffect(() => {
     fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vSqCcoMWwBgsDMPCEcKsO3QjKEpCAs42wnbNiXCMIKpHmvgikNZne9umMwbAED7-_oxjaNFNOoRp8X2/pub?output=csv")
@@ -26,9 +35,18 @@ export default function QuizApp() {
       });
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("quiz-current", current);
+    localStorage.setItem("quiz-score", score);
+  }, [current, score]);
+
+  useEffect(() => {
+    localStorage.setItem("quiz-fontSize", fontSize);
+  }, [fontSize]);
+
   const handleAnswer = (index) => {
     setSelected(index);
-    if (index === quiz[current].answer) setScore(score + 1);
+    if (index === quiz[current].answer) setScore(prev => prev + 1);
   };
 
   const handleNext = () => {
@@ -37,6 +55,8 @@ export default function QuizApp() {
       setSelected(null);
     } else {
       setShowScore(true);
+      localStorage.removeItem("quiz-current");
+      localStorage.removeItem("quiz-score");
     }
   };
 
@@ -46,10 +66,38 @@ export default function QuizApp() {
   if (quiz.length === 0) return <p style={{ textAlign: "center", marginTop: "2rem" }}>Chargement du quiz...</p>;
 
   if (showScore) {
+    const handleRestart = () => {
+      setCurrent(0);
+      setScore(0);
+      setSelected(null);
+      setShowScore(false);
+      localStorage.removeItem("quiz-current");
+      localStorage.removeItem("quiz-score");
+    };
+
     return (
-      <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", textAlign: "center", border: "1px solid #ccc", borderRadius: 8 }}>
+      <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", textAlign: "center", border: "1px solid #ccc", borderRadius: 8, fontSize }}>
         <h2 style={{ fontSize: fontSize + 4, marginBottom: "1rem" }}>Score final</h2>
         <p style={{ fontSize }}>{score} / {quiz.length}</p>
+        <button
+          onClick={() => {
+            if (window.confirm("Voulez-vous vraiment recommencer le quiz ?")) {
+              handleRestart();
+            }
+          }}
+          style={{
+            marginTop: "1rem",
+            padding: "0.5rem 1rem",
+            backgroundColor: "#e53935",
+            color: "white",
+            border: "none",
+            borderRadius: 4,
+            fontSize,
+            cursor: "pointer"
+          }}
+        >
+          Recommencer le quiz
+        </button>
       </div>
     );
   }
@@ -59,8 +107,8 @@ export default function QuizApp() {
   return (
     <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: 8, fontSize }}>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginBottom: "1rem" }}>
-        <button onClick={decreaseFont} style={{ padding: "0.25rem 0.5rem" }}>A-</button>
-        <button onClick={increaseFont} style={{ padding: "0.25rem 0.5rem" }}>A+</button>
+        <button onClick={decreaseFont} style={{ padding: "0.25rem 0.5rem", fontSize }}>A-</button>
+        <button onClick={increaseFont} style={{ padding: "0.25rem 0.5rem", fontSize }}>A+</button>
       </div>
       <h2 style={{ fontSize: fontSize + 2, marginBottom: "0.5rem" }}>Question {current + 1} / {quiz.length}</h2>
       <p style={{ marginBottom: "1rem" }}>{question.question}</p>
@@ -75,6 +123,7 @@ export default function QuizApp() {
               textAlign: "left",
               border: "1px solid #ccc",
               borderRadius: 4,
+              fontSize,
               backgroundColor:
                 selected === null ? "white" :
                 idx === question.answer ? "#c8e6c9" :
@@ -100,6 +149,7 @@ export default function QuizApp() {
             color: "white",
             border: "none",
             borderRadius: 4,
+            fontSize,
             cursor: "pointer"
           }}
         >
