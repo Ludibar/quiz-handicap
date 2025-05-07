@@ -6,9 +6,9 @@ export default function QuizApp() {
   const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
+  const [fontSize, setFontSize] = useState(16);
 
   useEffect(() => {
-    // Remplacer par l'URL CSV réelle
     fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vSqCcoMWwBgsDMPCEcKsO3QjKEpCAs42wnbNiXCMIKpHmvgikNZne9umMwbAED7-_oxjaNFNOoRp8X2/pub?output=csv")
       .then(res => res.text())
       .then(text => {
@@ -40,13 +40,16 @@ export default function QuizApp() {
     }
   };
 
+  const increaseFont = () => setFontSize(f => Math.min(f + 2, 28));
+  const decreaseFont = () => setFontSize(f => Math.max(f - 2, 12));
+
   if (quiz.length === 0) return <p style={{ textAlign: "center", marginTop: "2rem" }}>Chargement du quiz...</p>;
 
   if (showScore) {
     return (
       <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", textAlign: "center", border: "1px solid #ccc", borderRadius: 8 }}>
-        <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Score final</h2>
-        <p style={{ fontSize: "1.2rem" }}>{score} / {quiz.length}</p>
+        <h2 style={{ fontSize: fontSize + 4, marginBottom: "1rem" }}>Score final</h2>
+        <p style={{ fontSize }}>{score} / {quiz.length}</p>
       </div>
     );
   }
@@ -54,8 +57,12 @@ export default function QuizApp() {
   const question = quiz[current];
 
   return (
-    <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: 8 }}>
-      <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Question {current + 1} / {quiz.length}</h2>
+    <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: 8, fontSize }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginBottom: "1rem" }}>
+        <button onClick={decreaseFont} style={{ padding: "0.25rem 0.5rem" }}>A-</button>
+        <button onClick={increaseFont} style={{ padding: "0.25rem 0.5rem" }}>A+</button>
+      </div>
+      <h2 style={{ fontSize: fontSize + 2, marginBottom: "0.5rem" }}>Question {current + 1} / {quiz.length}</h2>
       <p style={{ marginBottom: "1rem" }}>{question.question}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1rem" }}>
         {question.options.map((opt, idx) => (
