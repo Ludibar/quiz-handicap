@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export default function QuizApp() {
   const [quiz, setQuiz] = useState([]);
@@ -10,11 +8,10 @@ export default function QuizApp() {
   const [showScore, setShowScore] = useState(false);
 
   useEffect(() => {
-    fetch("/quiz.csv")
+    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vSqCcoMWwBgsDMPCEcKsO3QjKEpCAs42wnbNiXCMIKpHmvgikNZne9umMwbAED7-_oxjaNFNOoRp8X2/pub?output=csv"
       .then(res => res.text())
       .then(text => {
         const lines = text.trim().split("\n");
-        const headers = lines[0].split(",");
         const data = lines.slice(1).map(line => {
           const values = line.split(",");
           return {
@@ -44,36 +41,42 @@ export default function QuizApp() {
 
   if (showScore) {
     return (
-      <Card className="max-w-xl mx-auto mt-10 p-6 text-center">
-        <CardContent>
-          <h2 className="text-2xl font-bold mb-4">Score final</h2>
-          <p className="text-lg">{score} / {quiz.length}</p>
-        </CardContent>
-      </Card>
+      <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", textAlign: "center", border: "1px solid #ccc", borderRadius: 8 }}>
+        <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Score final</h2>
+        <p style={{ fontSize: "1.2rem" }}>{score} / {quiz.length}</p>
+      </div>
     );
   }
 
   const question = quiz[current];
 
   return (
-    <Card className="max-w-xl mx-auto mt-10 p-6">
-      <CardContent>
-        <h2 className="text-xl font-semibold mb-4">Question {current + 1} / {quiz.length}</h2>
-        <p className="mb-6">{question.question}</p>
-        <div className="space-y-2">
-          {question.options.map((opt: string, idx: number) => (
-            <Button
-              key={idx}
-              onClick={() => handleAnswer(idx)}
-              className={`w-full justify-start ${selected !== null ? (idx === question.answer ? 'bg-green-500' : idx === selected ? 'bg-red-500' : '') : ''}`}
-              disabled={selected !== null}
-            >
-              {opt}
-            </Button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: 8 }}>
+      <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Question {current + 1} / {quiz.length}</h2>
+      <p style={{ marginBottom: "1rem" }}>{question.question}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        {question.options.map((opt: string, idx: number) => (
+          <button
+            key={idx}
+            onClick={() => handleAnswer(idx)}
+            disabled={selected !== null}
+            style={{
+              padding: "0.75rem 1rem",
+              textAlign: "left",
+              border: "1px solid #ccc",
+              borderRadius: 4,
+              backgroundColor:
+                selected === null ? "white" :
+                idx === question.answer ? "#c8e6c9" :
+                idx === selected ? "#ffcdd2" : "white",
+              cursor: selected === null ? "pointer" : "default"
+            }}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
