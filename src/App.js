@@ -28,14 +28,15 @@ export default function QuizApp() {
   const handleAnswer = (index) => {
     setSelected(index);
     if (index === quiz[current].answer) setScore(score + 1);
-    setTimeout(() => {
-      if (current + 1 < quiz.length) {
-        setCurrent(current + 1);
-        setSelected(null);
-      } else {
-        setShowScore(true);
-      }
-    }, 1000);
+  };
+
+  const handleNext = () => {
+    if (current + 1 < quiz.length) {
+      setCurrent(current + 1);
+      setSelected(null);
+    } else {
+      setShowScore(true);
+    }
   };
 
   if (quiz.length === 0) return <p style={{ textAlign: "center", marginTop: "2rem" }}>Chargement du quiz...</p>;
@@ -55,7 +56,7 @@ export default function QuizApp() {
     <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: 8 }}>
       <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Question {current + 1} / {quiz.length}</h2>
       <p style={{ marginBottom: "1rem" }}>{question.question}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1rem" }}>
         {question.options.map((opt, idx) => (
           <button
             key={idx}
@@ -77,6 +78,21 @@ export default function QuizApp() {
           </button>
         ))}
       </div>
+      {selected !== null && (
+        <button
+          onClick={handleNext}
+          style={{
+            padding: "0.75rem 1.25rem",
+            backgroundColor: "#1976d2",
+            color: "white",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer"
+          }}
+        >
+          Question suivante
+        </button>
+      )}
     </div>
   );
 }
