@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 export default function QuizApp() {
   const [quiz, setQuiz] = useState([]);
   const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
 
   useEffect(() => {
-fetch("https://docs.google.com/spreadsheets/d/TON_ID/export?format=csv").then(res => res.text())
+    // Remplacer par l'URL CSV réelle
+    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vSqCcoMWwBgsDMPCEcKsO3QjKEpCAs42wnbNiXCMIKpHmvgikNZne9umMwbAED7-_oxjaNFNOoRp8X2/pub?output=csv")
+      .then(res => res.text())
       .then(text => {
         const lines = text.trim().split("\n");
         const data = lines.slice(1).map(line => {
@@ -23,7 +25,7 @@ fetch("https://docs.google.com/spreadsheets/d/TON_ID/export?format=csv").then(re
       });
   }, []);
 
-  const handleAnswer = (index: number) => {
+  const handleAnswer = (index) => {
     setSelected(index);
     if (index === quiz[current].answer) setScore(score + 1);
     setTimeout(() => {
@@ -36,7 +38,7 @@ fetch("https://docs.google.com/spreadsheets/d/TON_ID/export?format=csv").then(re
     }, 1000);
   };
 
-  if (quiz.length === 0) return <p className="text-center mt-10">Chargement du quiz...</p>;
+  if (quiz.length === 0) return <p style={{ textAlign: "center", marginTop: "2rem" }}>Chargement du quiz...</p>;
 
   if (showScore) {
     return (
@@ -54,7 +56,7 @@ fetch("https://docs.google.com/spreadsheets/d/TON_ID/export?format=csv").then(re
       <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Question {current + 1} / {quiz.length}</h2>
       <p style={{ marginBottom: "1rem" }}>{question.question}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {question.options.map((opt: string, idx: number) => (
+        {question.options.map((opt, idx) => (
           <button
             key={idx}
             onClick={() => handleAnswer(idx)}
